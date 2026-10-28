@@ -1,0 +1,50 @@
+# Site DevLauncher : sécurité, téléchargement de l'installateur, cache et compression (Apache / LiteSpeed).
+
+Options -Indexes
+DirectoryIndex index.php
+
+# --- Fichiers privés : configuration, documentation, scripts planifiés
+<FilesMatch "^(\.env.*|devlauncher\.env|.*\.md|composer\.(json|lock))$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# --- HTTPS obligatoire : décommente ces 3 lignes une fois le certificat SSL actif (cPanel > SSL/TLS Status > AutoSSL)
+# RewriteEngine On
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- L'installateur est proposé au téléchargement (jamais affiché ni modifié par le serveur)
+AddType application/octet-stream .exe
+<IfModule mod_headers.c>
+  <FilesMatch "\.exe$">
+    Header set Content-Disposition "attachment"
+  </FilesMatch>
+</IfModule>
+AddType text/javascript .js .mjs
+
+# --- En-têtes de sécurité
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# --- Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# --- Cache des fichiers statiques (images, scripts). La page et le compteur ne sont jamais mis en cache.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType text/javascript "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+</IfModule>

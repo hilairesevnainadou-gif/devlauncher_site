@@ -1,0 +1,2 @@
+# Le rapport ne s'exécute par le web qu'avec le jeton secret (vérifié dans rapport.php) ; aucun listing du dossier.
+Options -Indexes

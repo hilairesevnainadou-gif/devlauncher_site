@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation DevLauncher</title>
+<meta name="description" content="Documentation utilisateur de DevLauncher 1.5 — Novatech Solution">
+<style>
+  :root {
+    --bg: #ffffff; --side: #f7f8fa; --text: #1f2328; --text-2: #57606a; --text-3: #8b939c;
+    --border: #e3e6ea; --code: #f3f4f6; --accent: #0373bb; --accent-weak: #eef5fb;
+    --warn: #9a6100; --warn-bg: #fdf6e7; --danger: #c8222a;
+    --mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1d1f23; --side: #222428; --text: #e3e5e8; --text-2: #a5acb5; --text-3: #7c838c;
+      --border: #363a41; --code: #2a2d33; --accent: #4aa3e0; --accent-weak: #1f3547;
+      --warn: #e8b15a; --warn-bg: #3a3222; --danger: #f07a74;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1d1f23; --side: #222428; --text: #e3e5e8; --text-2: #a5acb5; --text-3: #7c838c;
+    --border: #363a41; --code: #2a2d33; --accent: #4aa3e0; --accent-weak: #1f3547;
+    --warn: #e8b15a; --warn-bg: #3a3222; --danger: #f07a74;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.65 "Segoe UI", system-ui, -apple-system, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* En-tête */
+  .top { position: sticky; top: 0; z-index: 5; height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 24px;
+         background: var(--bg); border-bottom: 1px solid var(--border); }
+  .top img { width: 28px; height: 28px; }
+  .top .name { font-weight: 600; font-size: 15px; }
+  .top .doc { color: var(--text-3); font-size: 14px; padding-left: 12px; border-left: 1px solid var(--border); }
+  .top .ver { font: 12px var(--mono); color: var(--text-2); background: var(--code); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; }
+  .top .spacer { flex: 1; }
+  .top .org { font-size: 13px; color: var(--text-2); }
+
+  /* Mise en page */
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; }
+  nav.toc { position: sticky; top: 56px; align-self: start; height: calc(100vh - 56px); overflow-y: auto; padding: 24px 16px 40px 24px; border-right: 1px solid var(--border); font-size: 14px; }
+  .toc h4 { margin: 18px 0 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+  .toc summary { display: none; }
+  .toc summary + h4 { margin-top: 0; }
+  .toc a { display: block; padding: 3px 10px; margin-left: -10px; border-radius: 5px; color: var(--text-2); }
+  .toc a:hover { background: var(--side); color: var(--text); text-decoration: none; }
+  main { padding: 36px 48px 80px; min-width: 0; }
+  .content { max-width: 780px; }
+
+  /* Typographie */
+  h1 { font-size: 28px; line-height: 1.25; margin: 0 0 10px; letter-spacing: -.01em; }
+  .intro { font-size: 16.5px; color: var(--text-2); margin: 0 0 8px; }
+  .meta { font-size: 13px; color: var(--text-3); margin-bottom: 28px; }
+  section { padding-top: 8px; }
+  h2 { font-size: 21px; line-height: 1.3; margin: 44px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h2 .n { color: var(--text-3); font-weight: 500; margin-right: 8px; }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code, kbd { font-family: var(--mono); font-size: 13px; background: var(--code); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; }
+  .ui { font-weight: 600; } /* nom d'un bouton ou d'un menu de l'application */
+
+  /* Tableaux */
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 16px; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 12px; border: 1px solid var(--border); }
+  th { background: var(--side); font-weight: 600; font-size: 13px; color: var(--text-2); }
+  td:first-child { white-space: nowrap; }
+  td.wrap { white-space: normal; }
+
+  /* Encadrés */
+  .note, .warn { border-left: 3px solid var(--accent); background: var(--accent-weak); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 0 0 16px; font-size: 14px; }
+  .note b:first-child, .warn b:first-child { display: block; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 2px; }
+  .warn { border-left-color: var(--warn); background: var(--warn-bg); }
+  .warn b:first-child { color: var(--warn); }
+  .note b:first-child { color: var(--accent); }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+
+  /* Étapes */
+  ol.steps { counter-reset: s; list-style: none; padding-left: 0; }
+  ol.steps > li { counter-increment: s; position: relative; padding-left: 34px; margin: 0 0 10px; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--side); font-size: 12px; font-weight: 600; display: grid; place-items: center; color: var(--text-2); }
+
+  footer.foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-3); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); padding: 12px 16px; }
+    .toc summary { display: list-item; cursor: pointer; font-weight: 600; color: var(--text); padding: 4px 0; }
+    .toc details[open] summary { margin-bottom: 8px; }
+    .toc h4 { break-after: avoid; }
+    main { padding: 24px 16px 60px; }
+    .top { padding: 0 16px; }
+    .top .org { display: none; }
+    td:first-child { white-space: normal; }
+  }
+  @media (max-width: 560px) { h1 { font-size: 24px; } table { display: block; overflow-x: auto; } }
+  @media print {
+    .top, nav.toc { display: none; }
+    .layout { display: block; }
+    main { padding: 0; }
+    h2 { break-after: avoid; }
+    a { color: inherit; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <img alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='3' y='45' width='18' height='8' rx='1' fill='%2300A651'/%3E%3Crect x='23' y='45' width='18' height='8' rx='1' fill='%23F7941D'/%3E%3Crect x='43' y='45' width='18' height='8' rx='1' fill='%23ED1C24'/%3E%3Cpath d='M23.8 6 H40.2 L52.5 26 L32 43 L11.5 26 Z' fill='%230373BB' stroke='%230373BB' stroke-width='6' stroke-linejoin='round'/%3E%3Cpath d='M24 15 L30.5 21.5 L24 28' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M33.5 28 H40.5' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <span class="name">DevLauncher</span>
+  <span class="doc">Documentation</span>
+  <span class="ver">v1.5</span>
+  <span class="spacer"></span>
+  <span class="org">Novatech Solution</span>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="Sommaire"><details open id="toc-box"><summary>Sommaire</summary>
+  <h4>Prise en main</h4>
+  <a href="#presentation">1. Présentation</a>
+  <a href="#installation">2. Installation</a>
+  <a href="#interface">3. Interface</a>
+  <h4>Utilisation</h4>
+  <a href="#creer">4. Créer un projet</a>
+  <a href="#lancer">5. Lancer un projet</a>
+  <a href="#ports">6. Ports</a>
+  <a href="#manuel">7. Projets lancés à la main</a>
+  <a href="#terminal">8. Terminal et éditeur</a>
+  <h4>Laravel</h4>
+  <a href="#laravel">9. PHP et actions</a>
+  <a href="#database">10. Base de données</a>
+  <a href="#vite">11. Assets Vite</a>
+  <h4>Autres frameworks</h4>
+  <a href="#js">12. Next, Nuxt, React, Vue…</a>
+  <h4>Débogage</h4>
+  <a href="#erreurs">13. Erreurs</a>
+  <a href="#logs">14. Logs</a>
+  <a href="#mails">15. Mails de test</a>
+  <a href="#file">16. File d'attente</a>
+  <h4>Documentation</h4>
+  <a href="#uml">17. Diagrammes UML</a>
+  <h4>Serveur local</h4>
+  <a href="#serveur">18. Diagnostic et réparation</a>
+  <a href="#sauvegardes">19. Sauvegardes</a>
+  <h4>Configuration</h4>
+  <a href="#demarrage">20. Démarrage automatique</a>
+  <a href="#dossiers">21. Dossiers supplémentaires</a>
+  <a href="#donnees">22. Données enregistrées</a>
+  <h4>Aide</h4>
+  <a href="#depannage">23. Dépannage</a>
+</details></nav>
+<script>
+  // Sur petit écran, le sommaire est replié pour laisser place au contenu.
+  if (window.matchMedia('(max-width: 900px)').matches) document.getElementById('toc-box').removeAttribute('open');
+</script>
+
+<main><div class="content">
+  <h1>Documentation de DevLauncher</h1>
+  <p class="intro">DevLauncher lance, surveille et débogue les projets web de ton serveur local (XAMPP, Laragon, WAMP…) depuis une seule fenêtre, chacun sur son propre port.</p>
+  <div class="meta">Version 1.5 · Windows 10 et 11 · Novatech Solution</div>
+
+  <section id="presentation">
+    <h2><span class="n">1</span>Présentation</h2>
+    <p>Au démarrage, DevLauncher recherche les serveurs locaux sur tous les disques, liste les projets qu'ils contiennent et identifie leur type. Depuis l'application, tu peux :</p>
+    <ul>
+      <li>lancer et arrêter chaque projet sur le port de ton choix, sans terminal ;</li>
+      <li>exécuter les commandes courantes (installation, migrations, seeders, caches) ;</li>
+      <li>configurer et créer la base de données d'un projet Laravel ;</li>
+      <li>lire les erreurs expliquées, avec les fichiers concernés, et les fichiers de log ;</li>
+      <li>capturer les mails envoyés par tes projets pour voir leur rendu ;</li>
+      <li>démarrer automatiquement MySQL, Apache et tes projets ;</li>
+      <li>diagnostiquer et réparer MySQL et Apache, et sauvegarder tes bases ;</li>
+      <li>produire les diagrammes UML du projet (classes, séquence, activité) en PNG ou PDF.</li>
+    </ul>
+    <h3>Prérequis</h3>
+    <table>
+      <tr><th>Pour</th><th>Logiciel nécessaire</th></tr>
+      <tr><td>Projets Laravel / PHP</td><td class="wrap">XAMPP, Laragon, WAMP ou MAMP (PHP et MySQL) et Composer.</td></tr>
+      <tr><td>Next, Nuxt, React, Vue, Angular</td><td class="wrap">Node.js (version LTS recommandée).</td></tr>
+      <tr><td>Ouverture des fichiers</td><td class="wrap">Visual Studio Code (facultatif, recommandé).</td></tr>
+    </table>
+    <p>DevLauncher embarque son propre moteur : il n'a besoin d'aucune installation supplémentaire pour fonctionner.</p>
+  </section>
+
+  <section id="installation">
+    <h2><span class="n">2</span>Installation</h2>
+    <ol class="steps">
+      <li>Exécute <code>DevLauncher-Setup-1.5.0.exe</code>.</li>
+      <li>Si Windows affiche <i>Windows a protégé votre ordinateur</i>, clique sur <span class="ui">Informations complémentaires</span> puis <span class="ui">Exécuter quand même</span>. Ce message s'affiche pour les logiciels non signés par un certificat commercial.</li>
+      <li>Conserve le dossier proposé ou choisis-en un autre, puis clique sur <span class="ui">Installer</span>.</li>
+      <li>Clique sur <span class="ui">Terminer</span>. DevLauncher s'ouvre ; il est ensuite accessible depuis le Bureau et le menu Démarrer.</li>
+    </ol>
+    <table>
+      <tr><th>Sujet</th><th>Détail</th></tr>
+      <tr><td>Droits</td><td class="wrap">Aucun droit administrateur requis : installation pour le compte Windows courant.</td></tr>
+      <tr><td>Mise à jour</td><td class="wrap">Exécute le nouvel installateur. Il ferme DevLauncher, remplace les fichiers et conserve les réglages.</td></tr>
+      <tr><td>Désinstallation</td><td class="wrap"><span class="ui">Paramètres Windows → Applications → Applications installées → DevLauncher</span>. Les projets ne sont jamais modifiés.</td></tr>
+      <tr><td>Déploiement</td><td class="wrap">Installation silencieuse : <code>DevLauncher-Setup-1.5.0.exe /S</code>, avec <code>/D=C:\chemin</code> pour choisir le dossier.</td></tr>
+      <tr><td>Version portable</td><td class="wrap">Décompresse <code>DevLauncher-1.5.0-portable.zip</code> et lance <code>DevLauncher.exe</code>.</td></tr>
+    </table>
+    <div class="note"><b>Note</b>Le premier lancement peut prendre une dizaine de secondes, le temps que l'antivirus de Windows analyse les fichiers.</div>
+  </section>
+
+  <section id="interface">
+    <h2><span class="n">3</span>Interface</h2>
+    <table>
+      <tr><th>Zone</th><th>Contenu</th></tr>
+      <tr><td>Barre supérieure</td><td class="wrap">Onglets <span class="ui">Projets</span>, <span class="ui">Boîte mail</span>, <span class="ui">Serveur</span> et <span class="ui">Aide</span>, boutons <span class="ui">Nouveau projet</span>, <span class="ui">Ajouter un dossier</span>, <span class="ui">Actualiser</span>, <span class="ui">Paramètres</span> et thème clair/sombre. Le logo ouvre la fenêtre <i>À propos</i>.</td></tr>
+      <tr><td>Liste des projets</td><td class="wrap">Projets regroupés par dossier racine, avec type, sous-dossier, port et bouton Lancer/Arrêter. Recherche et filtre par type ou par état.</td></tr>
+      <tr><td>Détail du projet</td><td class="wrap">Onglets <span class="ui">Vue d'ensemble</span>, <span class="ui">Console</span>, <span class="ui">Erreurs</span>, <span class="ui">Logs</span>, <span class="ui">Base de données</span> et <span class="ui">File d'attente</span> (Laravel), <span class="ui">Diagrammes UML</span>. Le bouton <span class="ui">Aide</span> à droite des onglets ouvre ce guide sur la section de l'onglet affiché.</td></tr>
+      <tr><td>Aide</td><td class="wrap">Ce guide, intégré à l'application. Les boutons de situation (« Un projet ne démarre pas », « Port déjà utilisé »...) mènent directement à la bonne section ; la recherche surligne chaque occurrence (<kbd>Entrée</kbd> : suivante, <kbd>Maj</kbd>+<kbd>Entrée</kbd> : précédente). La touche <kbd>F1</kbd> ouvre l'aide de l'écran affiché, depuis n'importe où.</td></tr>
+      <tr><td>Barre d'état</td><td class="wrap">Serveurs détectés, versions de PHP, Composer, Node, état d'Apache, de MySQL et de la boîte mail.</td></tr>
+    </table>
+    <h3>États d'un projet</h3>
+    <table>
+      <tr><th>Indicateur</th><th>Signification</th></tr>
+      <tr><td><span class="dot" style="background:#b7bdc5"></span>Gris</td><td class="wrap">Arrêté.</td></tr>
+      <tr><td><span class="dot" style="background:#0373bb"></span>Bleu clignotant</td><td class="wrap">Démarrage en cours (installation des dépendances, compilation).</td></tr>
+      <tr><td><span class="dot" style="background:#00894a"></span>Vert</td><td class="wrap">En ligne, lancé par DevLauncher.</td></tr>
+      <tr><td><span class="dot" style="background:#d98a00"></span>Orange</td><td class="wrap">En ligne, lancé en dehors de DevLauncher (voir <a href="#manuel">section 7</a>).</td></tr>
+      <tr><td><span class="dot" style="background:#d11a21"></span>Rouge</td><td class="wrap">Échec du lancement ; la cause est affichée dans la vue d'ensemble.</td></tr>
+    </table>
+  </section>
+
+  <section id="creer">
+    <h2><span class="n">4</span>Créer un projet</h2>
+    <p>Le bouton <span class="ui">Nouveau projet</span> de la barre du haut crée un projet complet sans taper de commande. DevLauncher exécute lui-même les outils officiels de création (Composer, npm) et affiche leur progression.</p>
+    <ol class="steps">
+      <li>Choisis le type : Laravel, Next.js, Nuxt, React, Vue, Svelte, Angular, Astro, API Express ou site PHP. Un type grisé indique l'outil manquant (PHP 8.2, Composer ou Node.js).</li>
+      <li>Choisis le dossier de destination : le dossier web d'un serveur local (XAMPP, Laragon, WAMP) ou <span class="ui">Autre dossier...</span></li>
+      <li>Saisis le nom du projet. Les espaces deviennent des tirets ; les projets JavaScript sont en minuscules (règle de npm). Un nom déjà pris est signalé.</li>
+      <li>Choisis la <b>version</b> : Laravel 12, 11, 10 ou 9 ; Next.js (dernière, 15 ou 14) ; Angular (dernière, 19, 18 ou 17) ; React 19 ou 18 ; Express 5 ou 4. Pour Laravel, DevLauncher utilise le PHP du poste compatible avec la version choisie ; une version barrée signale qu'aucun PHP compatible n'est installé.</li>
+      <li>Règle les options proposées, puis clique sur <span class="ui">Continuer</span>.</li>
+      <li>L'écran <span class="ui">Vérification</span> récapitule le dossier, l'adresse locale, la version de PHP et les étapes prévues. Clique sur <span class="ui">Créer le projet</span>.</li>
+    </ol>
+    <table>
+      <tr><th>Type</th><th>Options</th><th>Ce que fait DevLauncher</th></tr>
+      <tr><td>Laravel</td><td class="wrap">Base SQLite ou MySQL, dépendances npm</td><td class="wrap">Télécharge Laravel avec le PHP 8.2+ le plus récent, renseigne le nom et l'adresse dans le <code>.env</code>. En MySQL : crée la base (nom du projet) sur le serveur local et crée les tables.</td></tr>
+      <tr><td>Next.js</td><td class="wrap">TypeScript, Tailwind CSS, ESLint</td><td class="wrap">Projet avec App Router et dossier <code>src</code>, dépendances installées.</td></tr>
+      <tr><td>React, Vue, Svelte</td><td class="wrap">TypeScript</td><td class="wrap">Projet Vite, dépendances installées.</td></tr>
+      <tr><td>Nuxt, Angular, Astro</td><td class="wrap">—</td><td class="wrap">Modèle minimal officiel, dépendances installées.</td></tr>
+      <tr><td>API Express, site PHP</td><td class="wrap">—</td><td class="wrap">Fichiers de départ prêts à modifier (route <code>/api/sante</code>, page <code>index.php</code>).</td></tr>
+    </table>
+    <p>La création peut prendre plusieurs minutes (téléchargements) : la durée de chaque étape s'affiche en direct. La fenêtre peut être fermée : la création continue et le bouton <span class="ui">Nouveau projet</span> la réaffiche. Une fois terminé, le projet apparaît dans la liste avec un port libre déjà attribué ; <span class="ui">Voir le projet</span> l'ouvre directement.</p>
+    <div class="note"><b>Interruption</b>Si une étape échoue ou si tu annules, le dossier déjà créé est conservé et l'étape en échec est indiquée. Les étapes restantes (dépendances, tables) se relancent depuis les actions du projet.</div>
+  </section>
+
+  <section id="lancer">
+    <h2><span class="n">5</span>Lancer un projet</h2>
+    <ol class="steps">
+      <li>Sélectionne le projet, puis clique sur <span class="ui">Lancer</span> (ou sur le bouton lecture dans la liste).</li>
+      <li>Si les dépendances sont absentes (<code>vendor</code>, <code>node_modules</code>), elles sont installées automatiquement avant le lancement.</li>
+      <li>Lorsque le serveur répond, l'état passe au vert et une notification affiche l'adresse. Clique dessus pour ouvrir le site.</li>
+    </ol>
+    <p><span class="ui">Arrêter</span> coupe le serveur et Vite ; <span class="ui">Redémarrer</span> applique une modification de configuration. Plusieurs projets peuvent tourner en même temps, sur des ports différents. À la fermeture de la fenêtre, les serveurs lancés par DevLauncher sont arrêtés, sauf réglage contraire (<a href="#demarrage">section 20</a>).</p>
+  </section>
+
+  <section id="ports">
+    <h2><span class="n">6</span>Ports</h2>
+    <p>Chaque projet reçoit un port libre à sa première détection : 8000+ pour Laravel, 3000+ pour Next et Nuxt, 5173+ pour Vite, 4200 pour Angular. Pour le changer : <span class="ui">Vue d'ensemble → Serveur → Port → Modifier</span>.</p>
+    <p>La fenêtre de modification vérifie le port pendant la saisie : libre, déjà attribué à un autre projet, ou occupé par un programme (dont le nom est indiqué). <span class="ui">Trouver un port libre</span> en propose un. Le réglage est conservé.</p>
+    <p><b>Mise à jour automatique de l'environnement.</b> Quand tu changes le port, DevLauncher corrige lui-même les adresses locales des fichiers <code>.env</code>, <code>.env.local</code> et <code>.env.development</code> : <code>APP_URL</code>, toute adresse <code>localhost:&lt;ancien port&gt;</code> et la clé <code>PORT</code>. Une notification liste les lignes modifiées et une copie <code>.env.devlauncher.bak</code> est conservée. Les ports de la base de données et des mails ne sont jamais touchés, ni les adresses distantes. Pour Laravel, si <code>APP_URL</code> ne correspond pas au port au lancement, la bonne adresse est appliquée pour la session.</p>
+    <div class="warn"><b>Attention</b>Un port affiché en rouge dans la liste est attribué à deux projets. Modifie l'un d'eux avant de lancer.</div>
+  </section>
+
+  <section id="manuel">
+    <h2><span class="n">7</span>Projets lancés à la main</h2>
+    <p>Un projet démarré depuis un terminal ou VS Code (<code>php artisan serve</code>, <code>npm run dev</code>…) est détecté automatiquement en quelques secondes : notification, bandeau sous la barre supérieure et indicateur orange. Sa vue d'ensemble indique le port, le programme et son numéro de processus, et propose :</p>
+    <table>
+      <tr><th>Action</th><th>Effet</th></tr>
+      <tr><td><span class="ui">Ouvrir</span></td><td class="wrap">Ouvre le site sur le port réellement utilisé.</td></tr>
+      <tr><td><span class="ui">Utiliser le port … pour ce projet</span></td><td class="wrap">Enregistre ce port comme port du projet.</td></tr>
+      <tr><td><span class="ui">Relancer avec DevLauncher</span></td><td class="wrap">Arrête le serveur existant puis le relance depuis DevLauncher (console, erreurs et mails capturés).</td></tr>
+      <tr><td><span class="ui">Arrêter</span></td><td class="wrap">Arrête le serveur, après confirmation.</td></tr>
+    </table>
+  </section>
+
+  <section id="terminal">
+    <h2><span class="n">8</span>Terminal et éditeur</h2>
+    <p>Les trois boutons en haut à droite du détail ouvrent le <b>dossier</b> du projet, un <b>terminal</b> et <b>VS Code</b>. Le terminal s'ouvre directement dans le dossier du projet, avec la version de PHP et Composer choisie pour ce projet : <code>php artisan</code>, <code>composer</code> et <code>npm</code> y fonctionnent sans configuration.</p>
+  </section>
+
+  <section id="laravel">
+    <h2><span class="n">9</span>Laravel : version de PHP et actions</h2>
+    <p>DevLauncher lit la version de PHP exigée par <code>composer.json</code> et utilise celle du serveur du projet si elle convient, sinon la plus récente disponible sur le poste. Exemple : un projet qui exige PHP 8.3 placé dans XAMPP (PHP 8.2) est lancé avec le PHP 8.3 de Laragon. La version utilisée figure sous le nom du projet.</p>
+    <p>Chaque action ouvre une fenêtre qui décrit son effet et la commande exacte. Après confirmation, la sortie s'affiche en direct, puis le résultat.</p>
+    <table>
+      <tr><th>Action</th><th>Commande</th><th>Effet</th></tr>
+      <tr><td>Installer les dépendances</td><td><code>composer install</code></td><td class="wrap">Crée aussi le <code>.env</code> depuis <code>.env.example</code>, génère la clé si elle est vide et exécute <code>npm install</code> si le projet utilise Vite.</td></tr>
+      <tr><td>Vider les caches</td><td><code>optimize:clear</code></td><td class="wrap">À lancer après une modification du <code>.env</code>.</td></tr>
+      <tr><td>Lien de stockage</td><td><code>storage:link</code></td><td class="wrap">Rend publics les fichiers envoyés.</td></tr>
+      <tr><td>Migrer</td><td><code>migrate</code></td><td class="wrap">Crée les tables manquantes ; les données sont conservées.</td></tr>
+      <tr><td>État des migrations</td><td><code>migrate:status</code></td><td class="wrap">Liste les migrations exécutées et en attente.</td></tr>
+      <tr><td>Remplir (seed)</td><td><code>db:seed</code></td><td class="wrap">Insère les données de départ ou de test.</td></tr>
+      <tr><td style="color:var(--danger)">Annuler la dernière migration</td><td><code>migrate:rollback</code></td><td class="wrap">Annule le dernier lot de migrations.</td></tr>
+      <tr><td style="color:var(--danger)">Réinitialiser la base</td><td><code>migrate:fresh --seed</code></td><td class="wrap">Supprime toutes les tables puis les recrée.</td></tr>
+    </table>
+    <div class="warn"><b>Attention</b>Les actions en rouge suppriment des données. Elles ne s'exécutent qu'après avoir coché la case de confirmation.</div>
+    <h3>Le bon serveur MySQL</h3>
+    <p>Chaque projet appartient au serveur dont il est dans le dossier (<code>htdocs</code> de XAMPP, <code>www</code> de Laragon…). Avant une action sur la base (migrer, seed, rollback, réinitialiser, état), DevLauncher vérifie quel MySQL répond sur le port du <code>.env</code> :</p>
+    <ul>
+      <li>si c'est celui du serveur du projet, l'action s'exécute normalement (le serveur utilisé est indiqué dans la fenêtre) ;</li>
+      <li>si c'est celui d'un autre serveur (par exemple le MySQL de XAMPP pour un projet Laragon), l'action est <b>bloquée</b> : <span class="ui">Basculer vers le MySQL de …</span> arrête l'autre MySQL, démarre le bon, puis exécute l'action. <span class="ui">Exécuter quand même</span> reste possible, en connaissance de cause.</li>
+    </ul>
+    <p>La vue d'ensemble du projet affiche la même alerte, avec le bouton de bascule.</p>
+  </section>
+
+  <section id="database">
+    <h2><span class="n">10</span>Base de données</h2>
+    <p>L'onglet <span class="ui">Base de données</span> d'un projet Laravel regroupe la connexion, l'état de la base et sa création.</p>
+    <h3>Configurer la connexion</h3>
+    <p>La carte <span class="ui">Connexion (.env)</span> affiche le type (MySQL, MariaDB, SQLite, PostgreSQL), l'hôte, le port, la base, l'utilisateur et le mot de passe lus dans le <code>.env</code>.</p>
+    <ul>
+      <li><span class="ui">Tester la connexion</span> vérifie les valeurs saisies sans les enregistrer, et indique si la base existe.</li>
+      <li><span class="ui">Enregistrer dans .env</span> affiche les lignes qui seront modifiées, puis les écrit. Le reste du fichier est conservé et l'ancienne version est sauvegardée dans <code>.env.devlauncher.bak</code>.</li>
+      <li>Un champ mot de passe vide signifie « inchangé ».</li>
+    </ul>
+    <h3>Créer la base</h3>
+    <ol class="steps">
+      <li>Si la base indiquée n'existe pas, clique sur <span class="ui">Créer la base</span> (ou sur <span class="ui">Nouvelle base…</span> pour un autre nom).</li>
+      <li>Vérifie le nom proposé et l'interclassement (<code>utf8mb4_unicode_ci</code> recommandé pour Laravel).</li>
+      <li>Option : <span class="ui">Créer un utilisateur dédié</span>, avec un mot de passe généré, limité à cette base.</li>
+      <li>Laisse cochée l'option d'enregistrement dans le <code>.env</code>, puis clique sur <span class="ui">Créer</span>.</li>
+      <li>Clique sur <span class="ui">Migrer maintenant</span> pour créer les tables.</li>
+    </ol>
+    <p>La création utilise le compte du <code>.env</code> (souvent <code>root</code> sous XAMPP) ; un autre compte administrateur peut être indiqué dans la fenêtre. Pour SQLite, DevLauncher crée le fichier de base.</p>
+    <h3>État et outils</h3>
+    <p>La carte <span class="ui">État de la base</span> indique la version du serveur, l'existence de la base, le nombre de tables, la taille et le nombre de migrations exécutées. La liste <span class="ui">Bases du serveur</span> permet de rattacher le projet à une base existante. <span class="ui">phpMyAdmin</span> ouvre la base dans phpMyAdmin (Apache est démarré si besoin).</p>
+    <h3 id="seeders">Seeders</h3>
+    <p>L'onglet <span class="ui">Seeders</span> liste les fichiers de <code>database/seeders</code> : pour chacun, ce qu'il remplit (en clair : Devises, Rôles, Comptes utilisateurs…), sa place dans <code>DatabaseSeeder</code> et son code, consultable à droite ou dans l'éditeur.</p>
+    <ol class="steps">
+      <li>Coche les seeders à lancer : un numéro indique leur ordre d'exécution, modifiable avec les flèches ▲ ▼. <span class="ui">Ordre de DatabaseSeeder</span> coche d'un coup ceux qu'il appelle, dans le même ordre.</li>
+      <li><span class="ui">Lancer la sélection</span> : DevLauncher vérifie que c'est bien le MySQL du serveur du projet qui répondra, puis exécute les seeders un par un (<code>db:seed --class</code>), avec la durée et la sortie de chacun. Au premier échec, les suivants ne sont pas lancés.</li>
+      <li><span class="ui">Tout lancer (DatabaseSeeder)</span> équivaut à <code>php artisan db:seed</code>.</li>
+    </ol>
+    <div class="warn"><b>Données ajoutées</b>Un seeder ajoute des lignes dans la base : relancé, il peut créer des doublons, sauf s'il utilise <code>firstOrCreate</code> ou <code>updateOrCreate</code>.</div>
+  </section>
+
+  <section id="vite">
+    <h2><span class="n">11</span>Assets Vite</h2>
+    <p>Pour un projet Laravel qui utilise Vite, l'option <span class="ui">Vite (assets)</span> démarre le serveur Vite avec Laravel, sur son propre port, afin que le CSS et le JavaScript se chargent. Désactive-la si les assets sont déjà compilés (<code>npm run build</code>).</p>
+  </section>
+
+  <section id="js">
+    <h2><span class="n">12</span>Next, Nuxt, React, Vue et autres</h2>
+    <table>
+      <tr><th>Type détecté</th><th>Commande lancée</th></tr>
+      <tr><td>Next.js</td><td><code>next dev -p PORT</code></td></tr>
+      <tr><td>Nuxt</td><td><code>nuxt dev --port PORT</code></td></tr>
+      <tr><td>React, Vue, Svelte (Vite)</td><td><code>vite --port PORT</code></td></tr>
+      <tr><td>React (Create React App)</td><td><code>react-scripts start</code> avec <code>PORT</code></td></tr>
+      <tr><td>Vue CLI, Angular, Astro</td><td>Commande de développement du framework, avec le port choisi</td></tr>
+      <tr><td>Node, Express, NestJS</td><td>Script <code>dev</code> ou <code>start</code>, avec la variable <code>PORT</code></td></tr>
+    </table>
+    <p>Actions disponibles : installation des dépendances (npm, yarn ou pnpm selon le projet) et compilation. Avec Prisma : génération du client, migrations, état, seed et réinitialisation.</p>
+    <div class="note"><b>Note</b>Un serveur Node/Express n'utilise le port choisi que si son code lit <code>process.env.PORT</code>.</div>
+  </section>
+
+  <section id="erreurs">
+    <h2><span class="n">13</span>Erreurs</h2>
+    <p>L'onglet <span class="ui">Erreurs</span> analyse le log Laravel et la console du projet, et regroupe les erreurs identiques (<i>×8</i> : survenue 8 fois). Pour chaque erreur :</p>
+    <ul>
+      <li>le message et le type d'exception (clique sur un message long pour le déplier) ;</li>
+      <li>une explication pour les erreurs courantes, avec un bouton de correction lorsqu'il en existe une : démarrer MySQL, migrer, installer les dépendances, changer de port ;</li>
+      <li>les <b>fichiers concernés</b> : <code>PROJET</code> pour les fichiers de l'application, <code>VUE</code> pour une vue Blade (le fichier <code>.blade.php</code> d'origine est retrouvé), et les fichiers de <code>vendor</code> ou <code>node_modules</code> regroupés à part. Un clic ouvre le fichier dans VS Code à la ligne indiquée ;</li>
+      <li>la trace complète.</li>
+    </ul>
+    <p>L'analyse est relancée automatiquement lorsqu'une erreur apparaît dans la console. Les trois dernières erreurs figurent dans la vue d'ensemble.</p>
+  </section>
+
+  <section id="logs">
+    <h2><span class="n">14</span>Logs</h2>
+    <p>L'onglet <span class="ui">Logs</span> liste les fichiers <code>*.log</code> du projet (<code>storage/logs</code> pour Laravel) et affiche les entrées de la plus récente à la plus ancienne.</p>
+    <ul>
+      <li>Filtre par niveau (erreurs, avertissements, informations, debug) et par texte.</li>
+      <li>Clique sur une entrée pour afficher son détail ; les chemins de fichiers y sont cliquables.</li>
+      <li><span class="ui">En direct</span> relit le fichier toutes les 3 secondes.</li>
+      <li>Boutons pour relire, ouvrir le fichier dans l'éditeur ou le vider (après confirmation).</li>
+    </ul>
+    <p>Pour les fichiers volumineux, seuls les 2 derniers Mo sont lus.</p>
+  </section>
+
+  <section id="mails">
+    <h2><span class="n">15</span>Mails de test</h2>
+    <p>DevLauncher intègre un serveur d'envoi de test (SMTP, port 2525 par défaut). Les mails envoyés par les projets y sont <b>capturés au lieu d'être envoyés</b>.</p>
+    <h3>Configuration</h3>
+    <table>
+      <tr><th>Cas</th><th>Procédure</th></tr>
+      <tr><td>Projet lancé par DevLauncher</td><td class="wrap">Automatique. La redirection est appliquée au lancement, sans modifier le <code>.env</code>. Désactivable par projet (option <span class="ui">Mails</span> de la vue d'ensemble).</td></tr>
+      <tr><td>Projet lancé à la main</td><td class="wrap"><span class="ui">Boîte mail → Configuration</span>, puis copie les lignes <code>MAIL_*</code> dans le <code>.env</code>. Un exemple Nodemailer est fourni.</td></tr>
+      <tr><td>Configuration en cache</td><td class="wrap">Lance <span class="ui">Vider les caches</span> pour que Laravel prenne en compte la redirection.</td></tr>
+    </table>
+    <h3>Consultation</h3>
+    <ul>
+      <li>Chaque mail indique l'expéditeur, l'objet, les destinataires et le projet qui l'a envoyé.</li>
+      <li><span class="ui">Aperçu</span> : rendu HTML réel en format ordinateur, tablette ou mobile. Les scripts sont bloqués et les liens s'ouvrent dans le navigateur.</li>
+      <li><span class="ui">Texte brut</span> et <span class="ui">En-têtes</span> pour les vérifications techniques.</li>
+      <li><b>Pièces jointes</b> : un clic les ouvre dans DevLauncher (images, PDF, fichiers texte, CSV, JSON), sans les enregistrer sur l'appareil. Les autres formats peuvent être téléchargés.</li>
+      <li>Le bouton <span class="ui">.eml</span> exporte le mail pour Outlook ou Thunderbird.</li>
+    </ul>
+    <p>Le bouton d'envoi (avion en papier) génère un mail d'exemple. Les 300 derniers mails sont conservés.</p>
+  </section>
+
+  <section id="file">
+    <h2><span class="n">16</span>File d'attente des e-mails</h2>
+    <p>Quand un projet Laravel met ses e-mails et notifications en file d'attente (<code>ShouldQueue</code>), ils attendent dans la base avant d'être envoyés. L'onglet <span class="ui">File d'attente</span> les rend visibles et pilotables, sans commande.</p>
+    <table>
+      <tr><th>Élément</th><th>Rôle</th></tr>
+      <tr><td>En attente</td><td class="wrap">Chaque élément est décrit en clair : nature (e-mail, notification, tâche), titre, destinataires, nombre d'essais. <span class="ui">Envoyer maintenant</span> traite la file une fois ; <span class="ui">Vider la file</span> supprime les éléments non commencés.</td></tr>
+      <tr><td>En échec</td><td class="wrap">Les envois qui ont échoué, avec le message d'erreur. <span class="ui">Relancer</span> ou <span class="ui">Supprimer</span>, élément par élément ou tous ensemble.</td></tr>
+      <tr><td>Traitement automatique</td><td class="wrap">Démarre un traitement continu de la file. L'option <span class="ui">Au lancement</span> le démarre avec le projet.</td></tr>
+    </table>
+    <p>Si le projet n'utilise pas encore de file (<code>QUEUE_CONNECTION=sync</code>), l'onglet propose de l'activer et de créer la table nécessaire. Seule la migration de cette table est exécutée : les autres migrations en attente ne sont pas lancées.</p>
+    <div class="warn"><b>Envoi réel</b>Avec l'interception des mails active (<a href="#mails">section 15</a>), les e-mails traités arrivent dans la <span class="ui">Boîte mail</span>. Sinon, ils partent réellement : l'onglet l'indique avant tout envoi. Comme pour les migrations, DevLauncher vérifie que c'est bien le MySQL du serveur du projet qui répond.</div>
+  </section>
+
+
+  <section id="uml">
+    <h2><span class="n">17</span>Diagrammes UML</h2>
+    <p>L'onglet <span class="ui">Diagrammes UML</span> d'un projet crée des diagrammes de <b>classes</b>, de <b>séquence</b> et d'<b>activité</b>. Ils sont enregistrés dans le dossier <code>docs/uml</code> du projet (fichiers <code>.puml</code>), ce qui permet de les versionner avec le code.</p>
+    <h3>Langage courant ou technique</h3>
+    <p>Par défaut, les diagrammes générés sont rédigés <b>en langage courant</b>, lisibles par un client ou un chef de projet : aucune méthode HTTP (GET, POST…), aucun nom de méthode, de contrôleur ni de commande. Exemples : « Créer une facture », « Vérifier les informations saisies », « Envoyer l'e-mail d'activation », classe « Facture » avec ses champs « montant : nombre décimal », « date d'échéance : date ». Les identifiants techniques, mots de passe et clés étrangères sont masqués ; les relations sont nommées « possède », « a », « est lié à ».</p>
+    <p>Le sélecteur <span class="ui">Technique</span> de la fenêtre de génération revient aux noms du code (routes, méthodes, types), utile pour la documentation des développeurs.</p>
+    <h3>Générer depuis le code</h3>
+    <table>
+      <tr><th>Diagramme</th><th>Source</th><th>Contenu généré</th></tr>
+      <tr><td>Classes</td><td class="wrap">Modèles Laravel, schéma Prisma, classes TypeScript ou toutes les classes PHP d'un dossier</td><td class="wrap">Classes avec attributs (colonnes typées lues dans les migrations, clés <code>{PK}</code> / <code>{FK}</code>), méthodes, héritage, interfaces et relations Eloquent avec multiplicités (<code>hasMany</code>, <code>belongsTo</code>, <code>belongsToMany</code>…).</td></tr>
+      <tr><td>Séquence</td><td class="wrap">Une route Laravel (<code>routes/*.php</code>, routes <code>resource</code> comprises)</td><td class="wrap">Utilisateur → routeur → contrôleur → FormRequest, modèles, services injectés, façades (Auth, Mail, DB…), avec les blocs <code>alt</code> / <code>loop</code> issus des conditions et boucles, et la réponse (vue, redirection, JSON).</td></tr>
+      <tr><td>Activité</td><td class="wrap">N'importe quelle fonction ou méthode PHP, JavaScript ou TypeScript</td><td class="wrap">Début, actions, décisions (<code>if</code> / <code>else</code>), boucles, gestion d'erreurs et fins (<code>return</code>). Les instructions courantes sont reformulées (« Valider les données de la requête », « Créer User »…).</td></tr>
+    </table>
+    <ol class="steps">
+      <li>Clique sur <span class="ui">Générer</span>, choisis le type puis la source (route, fichier et fonction…).</li>
+      <li>Vérifie le nom proposé et clique sur <span class="ui">Générer</span>.</li>
+      <li>Le diagramme s'affiche ; modifie le texte à gauche pour l'ajuster, l'aperçu se met à jour en direct.</li>
+    </ol>
+    <h3>Générer plusieurs diagrammes</h3>
+    <p>Quand le projet contient plusieurs actions, inutile de les traiter une par une :</p>
+    <table>
+      <tr><th>Choix</th><th>Résultat</th></tr>
+      <tr><td><span class="ui">Séquence → Plusieurs</span></td><td class="wrap">Liste de toutes les routes à cocher (filtre, <span class="ui">Tout cocher</span> / <span class="ui">Tout décocher</span> sur les routes affichées) : un diagramme de séquence par route cochée.</td></tr>
+      <tr><td><span class="ui">Activité → Plusieurs</span></td><td class="wrap">Laravel : liste des actions de contrôleur appelées par les routes (avec leurs URL) ; un diagramme d'activité par action. Autres projets : coche des fichiers, chacune de leurs fonctions donne un diagramme.</td></tr>
+      <tr><td><span class="ui">Projet complet</span></td><td class="wrap">En une fois : le diagramme de classes, une séquence par route et une activité par action (chaque partie peut être décochée).</td></tr>
+    </table>
+    <p>Les noms sont attribués automatiquement (<code>sequence-post-invoices</code>, <code>activite-InvoiceController-store</code>…). Les diagrammes déjà présents sont <b>conservés</b>, sauf si l'option <span class="ui">Remplacer les diagrammes qui existent déjà</span> est cochée ; tes modifications manuelles ne sont donc pas écrasées par défaut. Une barre de progression puis un récapitulatif (créés, remplacés, conservés, en erreur) s'affichent. La liste des diagrammes est classée par type (Classes, Séquence, Activité) avec leur nombre.</p>
+    <h3>Écrire un diagramme</h3>
+    <p><span class="ui">Nouveau</span> crée un diagramme à partir d'un exemple. La syntaxe est celle de PlantUML :</p>
+    <table>
+      <tr><th>Type</th><th>Syntaxe principale</th></tr>
+      <tr><td>Classes</td><td class="wrap"><code>class Nom { +attribut: type  +methode(): type }</code>, <code>abstract class</code>, <code>interface</code>, <code>enum</code> ; relations <code>A &lt;|-- B</code> (héritage), <code>A &lt;|.. B</code> (réalisation), <code>A "1" --&gt; "*" B : libellé</code> (association), <code>A *-- B</code> (composition), <code>A o-- B</code> (agrégation), <code>A ..&gt; B</code> (dépendance).</td></tr>
+      <tr><td>Séquence</td><td class="wrap"><code>actor</code>, <code>participant</code>, <code>database</code>, <code>entity</code>, <code>control</code> ; messages <code>A -&gt; B : texte</code>, réponses <code>B --&gt; A : texte</code>, asynchrone <code>A -&gt;&gt; B</code> ; blocs <code>alt … else … end</code>, <code>opt</code>, <code>loop</code> ; <code>note over A : texte</code>.</td></tr>
+      <tr><td>Activité</td><td class="wrap"><code>start</code>, <code>:action;</code>, <code>if (condition ?) then (oui) … else (non) … endif</code>, <code>elseif</code>, <code>while (condition ?) is (oui) … endwhile (non)</code>, <code>repeat … repeat while (…)</code>, <code>fork … fork again … end fork</code>, <code>stop</code>.</td></tr>
+    </table>
+    <p>Les lignes non reconnues sont signalées sous l'éditeur. <kbd>Ctrl</kbd> + <kbd>S</kbd> enregistre.</p>
+    <h3>Exporter</h3>
+    <ul>
+      <li><span class="ui">PNG</span> : image haute définition (échelle 2), fond blanc.</li>
+      <li><span class="ui">PDF</span> : document vectoriel au format exact du diagramme, texte sélectionnable.</li>
+    </ul>
+    <p>Les exports sont enregistrés à côté du diagramme dans <code>docs/uml</code> ; la notification permet de les ouvrir directement.</p>
+  </section>
+
+  <section id="serveur">
+    <h2><span class="n">18</span>Serveur local : diagnostic et réparation</h2>
+    <p>L'onglet <span class="ui">Serveur</span> analyse MySQL et Apache de chaque serveur détecté (XAMPP, Laragon, WAMP). Le sélecteur en haut à droite permet de passer d'un serveur à l'autre ; <span class="ui">Diagnostiquer</span> relance l'analyse.</p>
+    <h3>Ce que le diagnostic vérifie</h3>
+    <table>
+      <tr><th>Vérification</th><th>Détail</th></tr>
+      <tr><td>État et ports</td><td class="wrap">Service démarré ou non, et programme qui occupe le port s'il ne s'agit pas de ce serveur (autre MySQL, IIS, Skype, l'Apache d'un autre serveur…).</td></tr>
+      <tr><td>Journal d'erreurs</td><td class="wrap">Analyse de la dernière session de démarrage de <code>mysql_error.log</code> (ou du fichier <code>.err</code>) et de <code>error.log</code> d'Apache.</td></tr>
+      <tr><td>Accès aux tables</td><td class="wrap">Chaque table est testée réellement (sans lire de données). Les tables déclarées mais illisibles (« doesn't exist in engine ») sont listées par base, avec le projet qui utilise la base.</td></tr>
+      <tr><td>Configuration Apache</td><td class="wrap">Test <code>httpd -t</code> : une erreur de syntaxe est signalée avec sa ligne.</td></tr>
+      <tr><td>Historique</td><td class="wrap">Arrêts brutaux répétés, corruptions InnoDB passées, présence d'un fichier de crash <code>mysqld.dmp</code>.</td></tr>
+    </table>
+    <h3>Réparations proposées</h3>
+    <p>Chaque réparation affiche ses étapes avant de s'exécuter et propose une sauvegarde préalable lorsque MySQL est démarré.</p>
+    <table>
+      <tr><th>Problème</th><th>Réparation</th></tr>
+      <tr><td class="wrap">« MySQL shutdown unexpectedly », tables système ou InnoDB endommagées</td><td class="wrap"><span class="ui">Réparer MySQL (méthode XAMPP)</span> : le dossier <code>data</code> est renommé en <code>data_old_&lt;date&gt;</code> et conservé, les tables système saines de <code>mysql\backup</code> sont copiées, puis tes bases et <code>ibdata1</code> sont remis en place.</td></tr>
+      <tr><td class="wrap">Journaux Aria endommagés (MariaDB)</td><td class="wrap"><span class="ui">Réinitialiser les journaux Aria</span> : <code>aria_log_control</code> et <code>aria_log.*</code> sont déplacés dans un dossier <code>devlauncher-reparation-&lt;date&gt;</code> ; MariaDB les recrée.</td></tr>
+      <tr><td class="wrap">Port pris par l'autre serveur local</td><td class="wrap"><span class="ui">Arrêter l'autre serveur et démarrer celui-ci</span> : arrêt propre de l'autre MySQL ou Apache, puis démarrage.</td></tr>
+      <tr><td class="wrap">Port pris par un autre programme</td><td class="wrap"><span class="ui">Arrêter ce programme</span>, ou <span class="ui">Changer le port d'Apache</span> (XAMPP : <code>httpd.conf</code> et <code>httpd-ssl.conf</code>, copie <code>.devlauncher.bak</code> gardée).</td></tr>
+      <tr><td class="wrap">MySQL bloqué</td><td class="wrap"><span class="ui">Forcer l'arrêt de MySQL</span>, puis redémarrage.</td></tr>
+      <tr><td class="wrap">Tables inaccessibles</td><td class="wrap"><span class="ui">Restaurer…</span> depuis une sauvegarde, ou <span class="ui">Recréer</span> avec les migrations du projet (<code>migrate:fresh --seed</code>).</td></tr>
+    </table>
+    <div class="warn"><b>Attention</b>La méthode XAMPP remet les comptes MySQL d'origine (<code>root</code> sans mot de passe) : les utilisateurs créés à la main sont à recréer. Les bases et leurs données sont conservées.</div>
+    <h3>Arrêter proprement</h3>
+    <p><span class="ui">Arrêter</span> demande à MySQL de s'arrêter normalement (journaux écrits, fichiers fermés). Couper MySQL brutalement, en fermant XAMPP ou l'ordinateur, est la cause la plus fréquente de corruption. Si l'arrêt propre est refusé (mot de passe root), DevLauncher le demande ou propose l'arrêt forcé.</p>
+    <p>En cas d'échec au démarrage, la fenêtre de résultat affiche l'extrait du journal correspondant et la cause reconnue.</p>
+  </section>
+
+  <section id="sauvegardes">
+    <h2><span class="n">19</span>Sauvegardes</h2>
+    <p>Les sauvegardes sont des fichiers <code>.zip</code> datés, enregistrés par défaut dans <code>Documents\DevLauncher\Sauvegardes</code> (modifiable avec <span class="ui">Changer…</span>).</p>
+    <table>
+      <tr><th>Type</th><th>Contenu</th><th>Quand l'utiliser</th></tr>
+      <tr><td>Export SQL</td><td class="wrap">Un fichier <code>.sql</code> par base (structure, données, procédures, déclencheurs), sans bloquer les tables.</td><td class="wrap">Cas général, MySQL démarré.</td></tr>
+      <tr><td>Copie du dossier data</td><td class="wrap">Copie brute des fichiers de MySQL.</td><td class="wrap">Quand MySQL ne démarre plus. MySQL doit être arrêté.</td></tr>
+    </table>
+    <p>Les fichiers de configuration (<code>my.ini</code>, <code>httpd.conf</code>, <code>httpd-ssl.conf</code>, <code>httpd-vhosts.conf</code>, <code>php.ini</code>) peuvent être inclus. Les tables illisibles sont ignorées et signalées : le reste de chaque base est sauvegardé.</p>
+    <h3>Restaurer une base</h3>
+    <ol class="steps">
+      <li>Dans la liste des sauvegardes, clique sur <span class="ui">Restaurer…</span>.</li>
+      <li>Choisis la base de la sauvegarde et la base cible. Un autre nom permet de comparer sans rien écraser.</li>
+      <li>Si la base cible existe, elle est d'abord sauvegardée automatiquement (sauvegarde « avant restauration »), puis remplacée.</li>
+    </ol>
+    <h3>Sauvegarde automatique</h3>
+    <p>Active <span class="ui">Automatique</span> pour une sauvegarde SQL de toutes les bases une fois par jour, lorsque MySQL est démarré. Les 7 dernières sauvegardes automatiques sont conservées.</p>
+  </section>
+
+  <section id="demarrage">
+    <h2><span class="n">20</span>Démarrage automatique</h2>
+    <p>Réglages disponibles dans <span class="ui">Paramètres</span> :</p>
+    <table>
+      <tr><th>Réglage</th><th>Effet</th></tr>
+      <tr><td>Lancer DevLauncher avec Windows</td><td class="wrap">DevLauncher démarre en arrière-plan à l'ouverture de session. Les services et projets automatiques sont prêts sans intervention.</td></tr>
+      <tr><td>Démarrer MySQL automatiquement</td><td class="wrap">Actif par défaut. Démarre MySQL s'il est arrêté.</td></tr>
+      <tr><td>Démarrer Apache automatiquement</td><td class="wrap">Pour phpMyAdmin et les sites servis par Apache.</td></tr>
+      <tr><td>Garder les serveurs actifs</td><td class="wrap">La fermeture de la fenêtre n'arrête plus les projets. <span class="ui">Quitter DevLauncher</span> arrête tout.</td></tr>
+    </table>
+    <p>Pour démarrer un projet automatiquement, active <span class="ui">Démarrage : Lancer à l'ouverture de DevLauncher</span> dans sa vue d'ensemble. MySQL et Apache restent actifs après la fermeture de DevLauncher.</p>
+  </section>
+
+  <section id="dossiers">
+    <h2><span class="n">21</span>Dossiers supplémentaires</h2>
+    <p>Les dossiers des serveurs (<code>htdocs</code>, <code>www</code>) sont analysés automatiquement jusqu'à 4 niveaux de sous-dossiers. Pour les projets situés ailleurs, utilise <span class="ui">Ajouter des projets</span> :</p>
+    <table>
+      <tr><th>Choix</th><th>Effet</th></tr>
+      <tr><td>Rechercher sur ce PC</td><td class="wrap">Parcourt ton dossier personnel (Bureau, Documents, Téléchargements, OneDrive, Herd…) et tes autres disques, sans toucher à Windows ni aux programmes. Les projets trouvés s'affichent au fur et à mesure, cochés : décoche ceux que tu ne veux pas, puis <span class="ui">Ajouter</span>. Rien n'est modifié dans les dossiers.</td></tr>
+      <tr><td>Choisir un dossier</td><td class="wrap">Un dossier de projet est ajouté seul ; un dossier qui contient plusieurs projets est analysé comme un dossier racine (bouton <span class="ui">Retirer</span> pour l'enlever).</td></tr>
+    </table>
+    <p>Un projet <b>lancé à la main</b> hors des serveurs est aussi trouvé automatiquement (groupe <i>Détectés hors des serveurs</i>). Le bouton corbeille d'un projet ajouté le retire de la liste, sans supprimer ses fichiers.</p>
+    <p><b>Types reconnus :</b> Laravel, PHP (avec <code>index.php</code>, <code>composer.json</code> ou <code>public/index.php</code>), <b>sites HTML</b> (<code>index.html</code>, servis par le petit serveur intégré avec rechargement automatique du navigateur à chaque modification), Next.js, Nuxt, Angular, Astro, SvelteKit, Remix, React / Vue / Svelte (Vite, CRA, Vue CLI), Node / Express / NestJS.</p>
+  </section>
+
+  <section id="donnees">
+    <h2><span class="n">22</span>Données enregistrées</h2>
+    <table>
+      <tr><th>Élément</th><th>Emplacement</th></tr>
+      <tr><td>Réglages (ports, dossiers, paramètres)</td><td><code>%APPDATA%\DevLauncher\config.json</code></td></tr>
+      <tr><td>Mails capturés</td><td><code>%APPDATA%\DevLauncher\mails</code></td></tr>
+      <tr><td>Sauvegarde du .env</td><td><code>.env.devlauncher.bak</code>, dans le projet</td></tr>
+      <tr><td>Sauvegardes du serveur</td><td><code>Documents\DevLauncher\Sauvegardes</code> (modifiable)</td></tr>
+      <tr><td>Réparations MySQL</td><td><code>data_old_&lt;date&gt;</code> et <code>devlauncher-reparation-&lt;date&gt;</code>, à côté du dossier data</td></tr>
+    </table>
+    <p>Toutes les données restent sur le poste. Supprimer le dossier <code>%APPDATA%\DevLauncher</code> réinitialise l'application.</p>
+  </section>
+
+  <section id="depannage">
+    <h2><span class="n">23</span>Dépannage</h2>
+    <p>Commence par l'onglet <span class="ui">Erreurs</span> du projet ; la <span class="ui">Console</span> affiche les messages bruts.</p>
+    <table>
+      <tr><th>Symptôme</th><th>Solution</th></tr>
+      <tr><td class="wrap">« Le port X est déjà utilisé »</td><td class="wrap">Le message indique le programme concerné. Arrête-le ou choisis un autre port.</td></tr>
+      <tr><td class="wrap">Un projet n'apparaît pas</td><td class="wrap">Il doit contenir <code>artisan</code>, <code>composer.json</code>, <code>index.php</code> ou un <code>package.json</code> reconnu. Sinon, ajoute-le avec <span class="ui">Ajouter un dossier</span>.</td></tr>
+      <tr><td class="wrap">PHP ou Composer marqué ✗</td><td class="wrap">Installe le logiciel manquant puis clique sur <span class="ui">Actualiser</span>.</td></tr>
+      <tr><td class="wrap">« MySQL shutdown unexpectedly »</td><td class="wrap">Onglet <span class="ui">Serveur</span> → <span class="ui">Diagnostiquer</span>, puis la réparation proposée.</td></tr>
+      <tr><td class="wrap"><i>Table … doesn't exist in engine</i></td><td class="wrap">Tables inaccessibles : restaure la base depuis une sauvegarde ou recrée-la avec les migrations (onglet <span class="ui">Serveur</span>).</td></tr>
+      <tr><td class="wrap">Apache ne démarre pas (port 80)</td><td class="wrap">Onglet <span class="ui">Serveur</span> : arrête le programme indiqué ou change le port d'Apache.</td></tr>
+      <tr><td class="wrap"><i>SQLSTATE[HY000] [2002]</i></td><td class="wrap">MySQL est arrêté : démarre-le depuis la barre d'état.</td></tr>
+      <tr><td class="wrap"><i>Unknown database</i></td><td class="wrap">Onglet <span class="ui">Base de données</span> → <span class="ui">Créer la base</span>.</td></tr>
+      <tr><td class="wrap"><i>Access denied for user</i></td><td class="wrap">Corrige l'utilisateur ou le mot de passe dans <span class="ui">Base de données</span>, puis teste la connexion.</td></tr>
+      <tr><td class="wrap"><i>No application encryption key</i></td><td class="wrap">Lance <span class="ui">Installer les dépendances</span>.</td></tr>
+      <tr><td class="wrap"><i>Vite manifest not found</i></td><td class="wrap">Active <span class="ui">Vite (assets)</span> et redémarre, ou compile les assets.</td></tr>
+      <tr><td class="wrap">Mails non capturés</td><td class="wrap">Vérifie l'option <span class="ui">Mails</span> du projet, relance-le depuis DevLauncher et vide les caches Laravel.</td></tr>
+      <tr><td class="wrap">« Le port 2525 est déjà utilisé »</td><td class="wrap">Un autre outil (Mailpit, MailHog) utilise ce port : modifie le port SMTP dans les paramètres.</td></tr>
+      <tr><td class="wrap"><i>Your PHP version does not satisfy</i></td><td class="wrap">Installe la version de PHP demandée (par exemple dans Laragon) puis clique sur <span class="ui">Actualiser</span>.</td></tr>
+    </table>
+  </section>
+
+  <footer class="foot">
+    DevLauncher 1.5 — conçu et développé par Hilaire AINADOU, Novatech Solution · <a href="https://novatechbenin.com">novatechbenin.com</a> · <a href="https://github.com/hilairesevnainadou-gif">GitHub</a><br>© 2026 Novatech Solution. Tous droits réservés.
+  </footer>
+</div></main>
+</div>
+</body>
+</html>
